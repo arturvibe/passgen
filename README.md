@@ -2,7 +2,7 @@
 
 A password generator that runs entirely in your browser. It is one self-contained HTML file with no dependencies, no network requests and no tracking, and it works offline.
 
-**Live page:** https://arturvibe.github.io/passgen/
+**Live page:** https://passgen.fyi/
 
 ## Why trust it
 
@@ -56,7 +56,7 @@ If you forget, the browser blocks the script or styles and the tests fail.
 
 ### Deploying
 
-In the repo's **Settings → Pages**, set **Source** to **GitHub Actions**. Every push to `main` then runs the tests and publishes the page.
+In the repo's **Settings → Pages**, set **Source** to **GitHub Actions** and **Custom domain** to `passgen.fyi`. Every push to `main` then runs the tests and publishes the page.
 
 ## License
 

@@ -67,7 +67,7 @@ test("no external resources are referenced", () => {
   for (const ref of refs) {
     // Absolute URLs allowed: the link to the source repo and the canonical URL.
     // Neither is fetched by the browser.
-    if (ref === "https://github.com/arturvibe/passgen" || ref === "https://arturvibe.github.io/passgen/") continue;
+    if (ref === "https://github.com/arturvibe/passgen" || ref === "https://passgen.fyi/") continue;
     assert.ok(ref.startsWith("data:"), `external reference: ${ref}`);
   }
   assert.ok(!/<(?:iframe|object|embed|img|video|audio|source)\b/i.test(html));
