@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-aowtazAm4Mw+G09m1thckC52Z5Z79eGbn8lxXuiIowo='; style-src 'sha256-kfgjWjgtzvvxe6lOaNd0IoDvX3zxSJlkjTnNFzFUApE='; img-src data:; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-aowtazAm4Mw+G09m1thckC52Z5Z79eGbn8lxXuiIowo='; style-src 'sha256-jIlwu71/IuLxGi15bchFYFJq52es2rdJrZF4mMdxxAI='; img-src data:; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="no-referrer">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Password Generator – Free, Secure &amp; Open Source</title>
@@ -61,15 +61,12 @@
 * { box-sizing: border-box; }
 body {
   margin: 0;
-  min-height: 100vh;
   background: var(--bg);
   color: var(--text);
   font: 16px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  display: flex;
-  justify-content: center;
   padding: 24px 16px;
 }
-main { width: 100%; max-width: 560px; }
+main { max-width: 560px; margin: 0 auto; }
 h1 { font-size: 1.5rem; margin: 0 0 4px; }
 .lead { color: var(--muted); margin: 0 0 20px; }
 .card {
