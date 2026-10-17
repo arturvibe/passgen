@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-8vIEqju1LsOIDB9KhBCMAHJVcOQw6zzhZnwtnOD08aU='; style-src 'sha256-my1fwP9cSaXzm4lktnVDZ+r+ULDOJ/mSwyQuk/x8qJQ='; img-src data:; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-8vIEqju1LsOIDB9KhBCMAHJVcOQw6zzhZnwtnOD08aU='; style-src 'sha256-vW0/Gg65ketFFE3PUWadOufreTzwvwiMRtVt3hquclk='; img-src data:; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="no-referrer">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="color-scheme" content="light dark">
@@ -124,9 +124,9 @@ input[type="number"] {
 .toggles code { color: var(--muted); font-size: .85em; margin-left: auto; }
 .error { color: var(--error); margin: 8px 0 0; font-size: .9rem; }
 .error:empty { display: none; }
-footer { color: var(--muted); font-size: .85rem; margin-top: 20px; }
+footer { color: var(--muted); margin-top: 20px; }
 footer p { margin: 6px 0; }
-a { color: var(--accent); }
+a { color: inherit; }
 @media (max-width: 420px) {
   .toggles { grid-template-columns: 1fr; }
   .output { font-size: 1.1rem; }
