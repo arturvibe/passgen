@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-2tjWFbB/8XKI0vcx8pjzNCPgXZjONLswDnKTfn70TuE='; style-src 'sha256-asXYRaJz7+jWdFGJJ3xQ2o7IQA5qTE6qen0VEPmeG9U='; img-src data:; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-8vIEqju1LsOIDB9KhBCMAHJVcOQw6zzhZnwtnOD08aU='; style-src 'sha256-my1fwP9cSaXzm4lktnVDZ+r+ULDOJ/mSwyQuk/x8qJQ='; img-src data:; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="no-referrer">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="color-scheme" content="light dark">
@@ -70,15 +70,15 @@ h1 { font-size: 1.5rem; margin: 0 0 4px; }
   user-select: all;
   -webkit-user-select: all;
   cursor: text;
+  margin-bottom: 12px;
 }
-.meta {
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  margin: 10px 0 16px;
-  min-height: 1.5em;
-  font-size: .9rem;
-  color: var(--muted);
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
 }
 .actions { display: flex; gap: 10px; }
 button {
@@ -122,7 +122,8 @@ input[type="number"] {
 }
 .toggles input { width: 20px; height: 20px; accent-color: var(--accent); margin: 0; }
 .toggles code { color: var(--muted); font-size: .85em; margin-left: auto; }
-.error { color: var(--error); min-height: 1.5em; margin: 8px 0 0; font-size: .9rem; }
+.error { color: var(--error); margin: 8px 0 0; font-size: .9rem; }
+.error:empty { display: none; }
 footer { color: var(--muted); font-size: .85rem; margin-top: 20px; }
 footer p { margin: 6px 0; }
 a { color: var(--accent); }
@@ -135,15 +136,13 @@ a { color: var(--accent); }
 <body>
 <main>
   <h1>Password Generator</h1>
-  <p class="lead">Runs entirely in your browser. Nothing is sent anywhere.</p>
+  <p class="lead">Runs offline. Sends nothing.</p>
 
   <div class="card">
     <div id="password" class="output" aria-label="Generated password" aria-live="polite" tabindex="0"></div>
-    <div class="meta">
-      <span id="status" role="status"></span>
-    </div>
     <div class="actions">
       <button id="copy" class="primary" type="button">Copy</button>
+      <span id="status" class="sr-only" role="status"></span>
       <button id="regen" type="button">Generate new</button>
     </div>
 
@@ -168,7 +167,7 @@ a { color: var(--accent); }
   </div>
 
   <footer>
-    <p>Open source under the MIT licence: <a href="https://github.com/arturvibe/passgen" rel="noopener noreferrer">github.com/arturvibe/passgen</a></p>
+    <p><a href="https://github.com/arturvibe/passgen" rel="noopener noreferrer">Source</a> · MIT</p>
   </footer>
 </main>
 <script>
@@ -252,10 +251,12 @@ a { color: var(--accent); }
     return Math.min(MAX_LENGTH, Math.max(MIN_LENGTH, n));
   }
 
+  // Feedback is shown on the Copy button and announced via a hidden live region.
   function setStatus(msg) {
+    el.copy.textContent = msg || "Copy";
     el.status.textContent = msg;
     clearTimeout(statusTimer);
-    if (msg) statusTimer = setTimeout(function () { el.status.textContent = ""; }, 2000);
+    if (msg) statusTimer = setTimeout(function () { setStatus(""); }, 2000);
   }
 
   function render() {
@@ -289,7 +290,7 @@ a { color: var(--accent); }
     selectPassword();
     var ok = false;
     try { ok = document.execCommand("copy"); } catch (e) { ok = false; }
-    setStatus(ok ? "Copied" : "Selected, press Ctrl+C / ⌘C");
+    setStatus(ok ? "Copied" : /Mac|iPhone|iPad/.test(navigator.userAgent) ? "Press \u2318C" : "Press Ctrl+C");
   }
 
   el.copy.addEventListener("click", function () {
