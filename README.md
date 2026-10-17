@@ -23,7 +23,6 @@ Save the page (Ctrl+S / ⌘S, or download [`index.html`](index.html)) and open t
 - Toggles for uppercase, lowercase, digits and symbols (`!#$%&()*+,-./:;<=>?@[]^_{|}~`)
 - A new password on load and on every option change
 - Copy button that uses the Clipboard API and falls back to selecting the text
-- Entropy estimate
 - Works on mobile, with a light or dark theme that follows your system setting
 
 ## Verify it yourself

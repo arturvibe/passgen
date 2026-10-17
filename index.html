@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-sfSwteSonioiiM18us+CNxZiefe7sYdVOv+iVvMOlCI='; style-src 'sha256-U8manktCMplUal1qFBcx6F9Y36avXCASrYR2alQ9s04='; img-src data:; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-2tjWFbB/8XKI0vcx8pjzNCPgXZjONLswDnKTfn70TuE='; style-src 'sha256-asXYRaJz7+jWdFGJJ3xQ2o7IQA5qTE6qen0VEPmeG9U='; img-src data:; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="no-referrer">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="color-scheme" content="light dark">
@@ -20,9 +20,7 @@
   --accent: #2563eb;
   --accent-text: #ffffff;
   --field: #f0f2f5;
-  --weak: #c2410c;
-  --fair: #a16207;
-  --strong: #15803d;
+  --error: #c2410c;
   --focus: #2563eb;
 }
 @media (prefers-color-scheme: dark) {
@@ -35,9 +33,7 @@
     --accent: #4f8cff;
     --accent-text: #0b0d10;
     --field: #0f1115;
-    --weak: #fb923c;
-    --fair: #facc15;
-    --strong: #4ade80;
+    --error: #fb923c;
     --focus: #79a6ff;
   }
 }
@@ -77,16 +73,13 @@ h1 { font-size: 1.5rem; margin: 0 0 4px; }
 }
 .meta {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
   align-items: center;
-  gap: 12px;
   margin: 10px 0 16px;
+  min-height: 1.5em;
   font-size: .9rem;
   color: var(--muted);
 }
-.strength.weak { color: var(--weak); }
-.strength.fair { color: var(--fair); }
-.strength.strong { color: var(--strong); }
 .actions { display: flex; gap: 10px; }
 button {
   flex: 1;
@@ -129,7 +122,7 @@ input[type="number"] {
 }
 .toggles input { width: 20px; height: 20px; accent-color: var(--accent); margin: 0; }
 .toggles code { color: var(--muted); font-size: .85em; margin-left: auto; }
-.error { color: var(--weak); min-height: 1.5em; margin: 8px 0 0; font-size: .9rem; }
+.error { color: var(--error); min-height: 1.5em; margin: 8px 0 0; font-size: .9rem; }
 footer { color: var(--muted); font-size: .85rem; margin-top: 20px; }
 footer p { margin: 6px 0; }
 a { color: var(--accent); }
@@ -147,7 +140,6 @@ a { color: var(--accent); }
   <div class="card">
     <div id="password" class="output" aria-label="Generated password" aria-live="polite" tabindex="0"></div>
     <div class="meta">
-      <span id="strength" class="strength"></span>
       <span id="status" role="status"></span>
     </div>
     <div class="actions">
@@ -248,7 +240,7 @@ a { color: var(--accent); }
 
   function $(id) { return document.getElementById(id); }
   var el = {
-    password: $("password"), strength: $("strength"), status: $("status"),
+    password: $("password"), status: $("status"),
     copy: $("copy"), regen: $("regen"), error: $("error"),
     range: $("length-range"), number: $("length-number"),
     upper: $("upper"), lower: $("lower"), digits: $("digits"), symbols: $("symbols")
@@ -277,15 +269,10 @@ a { color: var(--accent); }
       });
       el.error.textContent = "";
       el.password.textContent = r.password;
-      var bits = Math.floor(length * Math.log2(r.charsetSize));
-      var label = bits < 60 ? "weak" : bits < 100 ? "fair" : "strong";
-      el.strength.className = "strength " + label;
-      el.strength.textContent = "~" + bits + " bits of entropy";
       el.copy.disabled = false;
     } catch (e) {
       el.error.textContent = e.message;
       el.password.textContent = "";
-      el.strength.textContent = "";
       el.copy.disabled = true;
     }
     setStatus("");
