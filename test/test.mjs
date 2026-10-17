@@ -65,8 +65,9 @@ test("CSP is default-src 'none' and hashes are current", () => {
 test("no external resources are referenced", () => {
   const refs = [...html.matchAll(/\b(?:src|href|action)\s*=\s*"([^"]*)"/g)].map((m) => m[1]);
   for (const ref of refs) {
-    // The only absolute URL is the plain link to the source repo, which is never fetched.
-    if (ref === "https://github.com/arturvibe/passgen") continue;
+    // Absolute URLs allowed: the link to the source repo and the canonical URL.
+    // Neither is fetched by the browser.
+    if (ref === "https://github.com/arturvibe/passgen" || ref === "https://arturvibe.github.io/passgen/") continue;
     assert.ok(ref.startsWith("data:"), `external reference: ${ref}`);
   }
   assert.ok(!/<(?:iframe|object|embed|img|video|audio|source)\b/i.test(html));
