@@ -1,0 +1,346 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-sfSwteSonioiiM18us+CNxZiefe7sYdVOv+iVvMOlCI='; style-src 'sha256-U8manktCMplUal1qFBcx6F9Y36avXCASrYR2alQ9s04='; img-src data:; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<meta name="description" content="Open-source password generator that runs entirely in your browser. No network requests, no tracking, works offline.">
+<title>Password Generator</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%232563eb'/%3E%3Ctext x='16' y='22' font-family='monospace' font-size='16' font-weight='700' text-anchor='middle' fill='white'%3E*%3C/text%3E%3C/svg%3E">
+<style>
+:root {
+  color-scheme: light dark;
+  --bg: #f5f6f8;
+  --card: #ffffff;
+  --text: #16181d;
+  --muted: #5b6270;
+  --border: #d9dde4;
+  --accent: #2563eb;
+  --accent-text: #ffffff;
+  --field: #f0f2f5;
+  --weak: #c2410c;
+  --fair: #a16207;
+  --strong: #15803d;
+  --focus: #2563eb;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0f1115;
+    --card: #181b21;
+    --text: #e8eaee;
+    --muted: #9aa2b1;
+    --border: #2c313a;
+    --accent: #4f8cff;
+    --accent-text: #0b0d10;
+    --field: #0f1115;
+    --weak: #fb923c;
+    --fair: #facc15;
+    --strong: #4ade80;
+    --focus: #79a6ff;
+  }
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--text);
+  font: 16px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  display: flex;
+  justify-content: center;
+  padding: 24px 16px;
+}
+main { width: 100%; max-width: 560px; }
+h1 { font-size: 1.5rem; margin: 0 0 4px; }
+.lead { color: var(--muted); margin: 0 0 20px; }
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 20px;
+}
+.output {
+  font: 1.25rem/1.4 ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+  background: var(--field);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px 16px;
+  min-height: 3.2em;
+  word-break: break-all;
+  overflow-wrap: anywhere;
+  user-select: all;
+  -webkit-user-select: all;
+  cursor: text;
+}
+.meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin: 10px 0 16px;
+  font-size: .9rem;
+  color: var(--muted);
+}
+.strength.weak { color: var(--weak); }
+.strength.fair { color: var(--fair); }
+.strength.strong { color: var(--strong); }
+.actions { display: flex; gap: 10px; }
+button {
+  flex: 1;
+  font: inherit;
+  font-weight: 600;
+  min-height: 46px;
+  padding: 10px 16px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--card);
+  color: var(--text);
+  cursor: pointer;
+}
+button.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-text); }
+button:hover { filter: brightness(1.08); }
+button:focus-visible, input:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+fieldset { border: 0; margin: 22px 0 0; padding: 0; }
+legend { font-weight: 600; margin-bottom: 8px; padding: 0; }
+.length-row { display: flex; align-items: center; gap: 12px; }
+input[type="range"] { flex: 1; accent-color: var(--accent); min-height: 32px; }
+input[type="number"] {
+  width: 5.5em;
+  font: inherit;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--field);
+  color: var(--text);
+}
+.toggles { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.toggles label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  cursor: pointer;
+  min-height: 46px;
+}
+.toggles input { width: 20px; height: 20px; accent-color: var(--accent); margin: 0; }
+.toggles code { color: var(--muted); font-size: .85em; margin-left: auto; }
+.error { color: var(--weak); min-height: 1.5em; margin: 8px 0 0; font-size: .9rem; }
+footer { color: var(--muted); font-size: .85rem; margin-top: 20px; }
+footer p { margin: 6px 0; }
+a { color: var(--accent); }
+@media (max-width: 420px) {
+  .toggles { grid-template-columns: 1fr; }
+  .output { font-size: 1.1rem; }
+}
+</style>
+</head>
+<body>
+<main>
+  <h1>Password Generator</h1>
+  <p class="lead">Runs entirely in your browser. Nothing is sent anywhere.</p>
+
+  <div class="card">
+    <div id="password" class="output" aria-label="Generated password" aria-live="polite" tabindex="0"></div>
+    <div class="meta">
+      <span id="strength" class="strength"></span>
+      <span id="status" role="status"></span>
+    </div>
+    <div class="actions">
+      <button id="copy" class="primary" type="button">Copy</button>
+      <button id="regen" type="button">Generate new</button>
+    </div>
+
+    <fieldset>
+      <legend><label for="length-number">Length</label></legend>
+      <div class="length-row">
+        <input id="length-range" type="range" min="8" max="128" value="20" aria-label="Length slider">
+        <input id="length-number" type="number" min="8" max="128" value="20" inputmode="numeric">
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>Characters</legend>
+      <div class="toggles">
+        <label><input id="upper" type="checkbox" checked> Uppercase <code>A-Z</code></label>
+        <label><input id="lower" type="checkbox" checked> Lowercase <code>a-z</code></label>
+        <label><input id="digits" type="checkbox" checked> Digits <code>0-9</code></label>
+        <label><input id="symbols" type="checkbox" checked> Symbols <code>!@#$</code></label>
+      </div>
+      <p id="error" class="error" role="alert"></p>
+    </fieldset>
+  </div>
+
+  <footer>
+    <p>Randomness comes from <code>crypto.getRandomValues()</code> with rejection sampling, so every character is equally likely. A Content Security Policy of <code>default-src 'none'</code> blocks all network requests. Save this page and it works offline.</p>
+    <p>Open source under the MIT licence: <a href="https://github.com/arturvibe/passgen" rel="noopener noreferrer">github.com/arturvibe/passgen</a></p>
+  </footer>
+</main>
+<script>
+(function () {
+  "use strict";
+
+  var SETS = {
+    upper: "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+    lower: "abcdefghijklmnopqrstuvwxyz",
+    digits: "0123456789",
+    symbols: "!#$%&()*+,-./:;<=>?@[]^_{|}~"
+  };
+  var MIN_LENGTH = 8;
+  var MAX_LENGTH = 128;
+  var DEFAULT_LENGTH = 20;
+
+  // Uniform random integers in [0, n) from crypto.getRandomValues().
+  // Values at or above the largest multiple of n below 2^32 are rejected,
+  // so x % n has no modulo bias.
+  function randomIndices(n, count) {
+    if (!(n >= 1 && n <= 0x100000000)) throw new RangeError("bad range");
+    var limit = 0x100000000 - (0x100000000 % n);
+    var out = new Array(count);
+    var filled = 0;
+    var buf = new Uint32Array(Math.min(Math.max(count, 16), 16384));
+    while (filled < count) {
+      crypto.getRandomValues(buf);
+      for (var i = 0; i < buf.length && filled < count; i++) {
+        if (buf[i] < limit) out[filled++] = buf[i] % n;
+      }
+    }
+    buf.fill(0);
+    return out;
+  }
+
+  function randomString(charset, length) {
+    var idx = randomIndices(charset.length, length);
+    var s = "";
+    for (var i = 0; i < length; i++) s += charset[idx[i]];
+    return s;
+  }
+
+  // Draws from the union of the selected sets and redraws the whole password
+  // until it contains at least one character from each selected set. Whole-
+  // password rejection keeps every valid password equally likely.
+  function generate(options) {
+    var sets = [];
+    for (var name in SETS) if (options[name]) sets.push(SETS[name]);
+    if (sets.length === 0) throw new Error("Select at least one character type.");
+    var length = options.length;
+    if (!(length >= MIN_LENGTH && length <= MAX_LENGTH)) throw new RangeError("bad length");
+    var charset = sets.join("");
+    for (;;) {
+      var pw = randomString(charset, length);
+      var ok = sets.every(function (set) {
+        for (var i = 0; i < pw.length; i++) if (set.indexOf(pw[i]) !== -1) return true;
+        return false;
+      });
+      if (ok) return { password: pw, charsetSize: charset.length };
+    }
+  }
+
+  var api = { SETS: SETS, randomIndices: randomIndices, randomString: randomString, generate: generate };
+  if (typeof document === "undefined") {
+    globalThis.PassGen = api;
+    return;
+  }
+
+  function $(id) { return document.getElementById(id); }
+  var el = {
+    password: $("password"), strength: $("strength"), status: $("status"),
+    copy: $("copy"), regen: $("regen"), error: $("error"),
+    range: $("length-range"), number: $("length-number"),
+    upper: $("upper"), lower: $("lower"), digits: $("digits"), symbols: $("symbols")
+  };
+  var statusTimer;
+
+  function clampLength(v) {
+    var n = parseInt(v, 10);
+    if (isNaN(n)) n = DEFAULT_LENGTH;
+    return Math.min(MAX_LENGTH, Math.max(MIN_LENGTH, n));
+  }
+
+  function setStatus(msg) {
+    el.status.textContent = msg;
+    clearTimeout(statusTimer);
+    if (msg) statusTimer = setTimeout(function () { el.status.textContent = ""; }, 2000);
+  }
+
+  function render() {
+    var length = clampLength(el.number.value);
+    try {
+      var r = generate({
+        length: length,
+        upper: el.upper.checked, lower: el.lower.checked,
+        digits: el.digits.checked, symbols: el.symbols.checked
+      });
+      el.error.textContent = "";
+      el.password.textContent = r.password;
+      var bits = Math.floor(length * Math.log2(r.charsetSize));
+      var label = bits < 60 ? "weak" : bits < 100 ? "fair" : "strong";
+      el.strength.className = "strength " + label;
+      el.strength.textContent = "~" + bits + " bits of entropy";
+      el.copy.disabled = false;
+    } catch (e) {
+      el.error.textContent = e.message;
+      el.password.textContent = "";
+      el.strength.textContent = "";
+      el.copy.disabled = true;
+    }
+    setStatus("");
+  }
+
+  function selectPassword() {
+    var range = document.createRange();
+    range.selectNodeContents(el.password);
+    var sel = window.getSelection();
+    sel.removeAllRanges();
+    sel.addRange(range);
+  }
+
+  function fallbackCopy() {
+    selectPassword();
+    var ok = false;
+    try { ok = document.execCommand("copy"); } catch (e) { ok = false; }
+    setStatus(ok ? "Copied" : "Selected, press Ctrl+C / ⌘C");
+  }
+
+  el.copy.addEventListener("click", function () {
+    var text = el.password.textContent;
+    if (!text) return;
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function () { setStatus("Copied"); }, fallbackCopy);
+    } else {
+      fallbackCopy();
+    }
+  });
+
+  el.regen.addEventListener("click", render);
+
+  el.range.addEventListener("input", function () {
+    el.number.value = el.range.value;
+    render();
+  });
+  el.number.addEventListener("input", function () {
+    var raw = parseInt(el.number.value, 10);
+    if (raw >= MIN_LENGTH && raw <= MAX_LENGTH) {
+      el.range.value = raw;
+      render();
+    }
+  });
+  el.number.addEventListener("change", function () {
+    var v = clampLength(el.number.value);
+    el.number.value = v;
+    el.range.value = v;
+    render();
+  });
+  ["upper", "lower", "digits", "symbols"].forEach(function (k) {
+    el[k].addEventListener("change", render);
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>
