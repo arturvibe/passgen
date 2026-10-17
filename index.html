@@ -2,10 +2,9 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-8vIEqju1LsOIDB9KhBCMAHJVcOQw6zzhZnwtnOD08aU='; style-src 'sha256-vW0/Gg65ketFFE3PUWadOufreTzwvwiMRtVt3hquclk='; img-src data:; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-aowtazAm4Mw+G09m1thckC52Z5Z79eGbn8lxXuiIowo='; style-src 'sha256-kfgjWjgtzvvxe6lOaNd0IoDvX3zxSJlkjTnNFzFUApE='; img-src data:; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="no-referrer">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="color-scheme" content="light dark">
 <meta name="description" content="Open-source password generator that runs entirely in your browser. No network requests, no tracking, works offline.">
 <title>Password Generator</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%232563eb'/%3E%3Ctext x='16' y='22' font-family='monospace' font-size='16' font-weight='700' text-anchor='middle' fill='white'%3E*%3C/text%3E%3C/svg%3E">
@@ -20,8 +19,6 @@
   --accent: #2563eb;
   --accent-text: #ffffff;
   --field: #f0f2f5;
-  --error: #c2410c;
-  --focus: #2563eb;
 }
 @media (prefers-color-scheme: dark) {
   :root {
@@ -33,12 +30,9 @@
     --accent: #4f8cff;
     --accent-text: #0b0d10;
     --field: #0f1115;
-    --error: #fb923c;
-    --focus: #79a6ff;
   }
 }
 * { box-sizing: border-box; }
-html { -webkit-text-size-adjust: 100%; }
 body {
   margin: 0;
   min-height: 100vh;
@@ -64,13 +58,10 @@ h1 { font-size: 1.5rem; margin: 0 0 4px; }
   border: 1px solid var(--border);
   border-radius: 10px;
   padding: 14px 16px;
-  min-height: 3.2em;
   word-break: break-all;
-  overflow-wrap: anywhere;
   user-select: all;
   -webkit-user-select: all;
   cursor: text;
-  margin-bottom: 12px;
 }
 .sr-only {
   position: absolute;
@@ -80,7 +71,7 @@ h1 { font-size: 1.5rem; margin: 0 0 4px; }
   clip-path: inset(50%);
   white-space: nowrap;
 }
-.actions { display: flex; gap: 10px; }
+.actions { display: flex; gap: 10px; margin-top: 22px; }
 button {
   flex: 1;
   font: inherit;
@@ -95,7 +86,7 @@ button {
 }
 button.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-text); }
 button:hover { filter: brightness(1.08); }
-button:focus-visible, input:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+button:focus-visible, input:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
 fieldset { border: 0; margin: 22px 0 0; padding: 0; }
 legend { font-weight: 600; margin-bottom: 8px; padding: 0; }
 .length-row { display: flex; align-items: center; gap: 12px; }
@@ -122,10 +113,7 @@ input[type="number"] {
 }
 .toggles input { width: 20px; height: 20px; accent-color: var(--accent); margin: 0; }
 .toggles code { color: var(--muted); font-size: .85em; margin-left: auto; }
-.error { color: var(--error); margin: 8px 0 0; font-size: .9rem; }
-.error:empty { display: none; }
 footer { color: var(--muted); margin-top: 20px; }
-footer p { margin: 6px 0; }
 a { color: inherit; }
 @media (max-width: 420px) {
   .toggles { grid-template-columns: 1fr; }
@@ -139,12 +127,7 @@ a { color: inherit; }
   <p class="lead">Runs offline. Sends nothing.</p>
 
   <div class="card">
-    <div id="password" class="output" aria-label="Generated password" aria-live="polite" tabindex="0"></div>
-    <div class="actions">
-      <button id="copy" class="primary" type="button">Copy</button>
-      <span id="status" class="sr-only" role="status"></span>
-      <button id="regen" type="button">Generate new</button>
-    </div>
+    <div id="password" class="output" aria-label="Generated password" tabindex="0"></div>
 
     <fieldset>
       <legend><label for="length-number">Length</label></legend>
@@ -162,12 +145,17 @@ a { color: inherit; }
         <label><input id="digits" type="checkbox" checked> Digits <code>0-9</code></label>
         <label><input id="symbols" type="checkbox" checked> Symbols <code>!@#$</code></label>
       </div>
-      <p id="error" class="error" role="alert"></p>
     </fieldset>
+
+    <div class="actions">
+      <button id="copy" class="primary" type="button">Copy</button>
+      <span id="status" class="sr-only" role="status"></span>
+      <button id="regen" type="button">Generate new</button>
+    </div>
   </div>
 
   <footer>
-    <p>Open source · MIT · <a href="https://github.com/arturvibe/passgen" rel="noopener noreferrer">github.com/arturvibe/passgen</a></p>
+    Open source · MIT · <a href="https://github.com/arturvibe/passgen">github.com/arturvibe/passgen</a>
   </footer>
 </main>
 <script>
@@ -199,7 +187,6 @@ a { color: inherit; }
         if (buf[i] < limit) out[filled++] = buf[i] % n;
       }
     }
-    buf.fill(0);
     return out;
   }
 
@@ -226,7 +213,7 @@ a { color: inherit; }
         for (var i = 0; i < pw.length; i++) if (set.indexOf(pw[i]) !== -1) return true;
         return false;
       });
-      if (ok) return { password: pw, charsetSize: charset.length };
+      if (ok) return pw;
     }
   }
 
@@ -239,7 +226,7 @@ a { color: inherit; }
   function $(id) { return document.getElementById(id); }
   var el = {
     password: $("password"), status: $("status"),
-    copy: $("copy"), regen: $("regen"), error: $("error"),
+    copy: $("copy"), regen: $("regen"),
     range: $("length-range"), number: $("length-number"),
     upper: $("upper"), lower: $("lower"), digits: $("digits"), symbols: $("symbols")
   };
@@ -260,42 +247,27 @@ a { color: inherit; }
   }
 
   function render() {
-    var length = clampLength(el.number.value);
-    try {
-      var r = generate({
-        length: length,
-        upper: el.upper.checked, lower: el.lower.checked,
-        digits: el.digits.checked, symbols: el.symbols.checked
-      });
-      el.error.textContent = "";
-      el.password.textContent = r.password;
-      el.copy.disabled = false;
-    } catch (e) {
-      el.error.textContent = e.message;
-      el.password.textContent = "";
-      el.copy.disabled = true;
-    }
+    el.password.textContent = generate({
+      length: clampLength(el.number.value),
+      upper: el.upper.checked, lower: el.lower.checked,
+      digits: el.digits.checked, symbols: el.symbols.checked
+    });
     setStatus("");
   }
 
-  function selectPassword() {
+  function fallbackCopy() {
     var range = document.createRange();
     range.selectNodeContents(el.password);
     var sel = window.getSelection();
     sel.removeAllRanges();
     sel.addRange(range);
-  }
-
-  function fallbackCopy() {
-    selectPassword();
-    var ok = false;
+    var ok;
     try { ok = document.execCommand("copy"); } catch (e) { ok = false; }
     setStatus(ok ? "Copied" : /Mac|iPhone|iPad/.test(navigator.userAgent) ? "Press \u2318C" : "Press Ctrl+C");
   }
 
   el.copy.addEventListener("click", function () {
     var text = el.password.textContent;
-    if (!text) return;
     if (navigator.clipboard && navigator.clipboard.writeText) {
       navigator.clipboard.writeText(text).then(function () { setStatus("Copied"); }, fallbackCopy);
     } else {
@@ -322,8 +294,13 @@ a { color: inherit; }
     el.range.value = v;
     render();
   });
-  ["upper", "lower", "digits", "symbols"].forEach(function (k) {
-    el[k].addEventListener("change", render);
+  // At least one character type must stay selected: undo unticking the last one.
+  var types = [el.upper, el.lower, el.digits, el.symbols];
+  types.forEach(function (box) {
+    box.addEventListener("change", function () {
+      if (!types.some(function (b) { return b.checked; })) box.checked = true;
+      else render();
+    });
   });
 
   render();

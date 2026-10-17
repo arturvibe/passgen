@@ -102,7 +102,7 @@ test("generate honours length and character options", () => {
     for (const length of [8, 20, 128]) {
       opts.length = length;
       for (let k = 0; k < 50; k++) {
-        const { password } = generate(opts);
+        const password = generate(opts);
         assert.equal(password.length, length);
         for (const n of names) {
           const has = [...password].some((c) => SETS[n].includes(c));
